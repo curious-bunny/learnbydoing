@@ -4,97 +4,93 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style"="default">
-<meta name="apple-mobile-web-app-title" content="匯率換算">
-<meta name="mobile-web-app-capable" content="yes">
 <title>匯率換算</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f5f7fa;
-    padding: 20px;
-  }
-  .box {
-    max-width: 400px;
-    margin: 0 auto;
-    background: white;
-    padding: 25px;
-    border-radius: 16px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    text-align: center;
-  }
-  .rabbit {
-    width: 70px;
-    margin-bottom: 10px;
-  }
-  h2 {
-    margin-bottom: 20px;
-    font-size: 20px;
-  }
-  select, input {
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    margin-bottom: 12px;
-  }
-  button {
-    width: 100%;
-    padding: 12px;
-    background: #0066cc;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-  }
-  .result {
-    margin-top: 18px;
-    font-size: 18px;
-    font-weight: bold;
-  }
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f6f8;
+        padding: 20px;
+    }
+    .container {
+        max-width: 380px;
+        margin: 0 auto;
+        background: white;
+        padding: 25px;
+        border-radius: 18px;
+        text-align: center;
+    }
+    .rabbit {
+        width: 60px;
+        height: 60px;
+        background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjM1IiBjeT0iNDAiIHI9IjgiLz48Y2lyY2xlIGN4PSI2NSIgY3k9IjQwIiByPSI4Ii8+PHBhdGggZD0iTTUwIDYwIDEgMTAiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBmaWxsPSJub25lIi8+PC9zdmc+');
+        background-size: cover;
+        margin: 0 auto 15px auto;
+    }
+    h2 {
+        margin-bottom: 20px;
+    }
+    input, select {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        margin-bottom: 12px;
+    }
+    button {
+        width: 100%;
+        padding: 12px;
+        background: #0066cc;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+    }
+    .result {
+        margin-top: 20px;
+        font-size: 18px;
+        font-weight: bold;
+    }
 </style>
 </head>
 
 <body>
-<div class="box">
-  <img class="rabbit" src="https://i.imgur.com/ycZbJt9.png">
-  <h2>匯率換算</h2>
+<div class="container">
+    <div class="rabbit"></div>
+    <h2>匯率換算</h2>
 
-  <input type="number" id="amt" placeholder="請輸入金額">
-  
-  <select id="from">
-    <option value="MOP">澳門元 MOP</option>
-    <option value="HKD">港幣 HKD</option>
-    <option value="RMB">人民幣 RMB</option>
-    <option value="USD">美元 USD</option>
-  </select>
+    <input type="number" id="amt" placeholder="輸入金額">
+    <select id="from">
+        <option value="MOP">澳門元 MOP</option>
+        <option value="HKD">港幣 HKD</option>
+        <option value="RMB">人民幣 RMB</option>
+        <option value="USD">美元 USD</option>
+    </select>
 
-  <select id="to">
-    <option value="HKD">港幣 HKD</option>
-    <option value="MOP">澳門元 MOP</option>
-    <option value="RMB">人民幣 RMB</option>
-    <option value="USD">美元 USD</option>
-  </select>
+    <select id="to">
+        <option value="HKD">港幣 HKD</option>
+        <option value="MOP">澳門元 MOP</option>
+        <option value="RMB">人民幣 RMB</option>
+        <option value="USD">美元 USD</option>
+    </select>
 
-  <button onclick="convert()">計算</button>
-  <div class="result" id="res"></div>
+    <button onclick="convert()">換算</button>
+    <div class="result" id="res"></div>
 </div>
 
 <script>
 const rate = {
-  MOP: { HKD: 0.97, RMB: 0.79, USD: 0.11, MOP: 1 },
-  HKD: { MOP: 1.03, RMB: 0.81, USD: 0.11, HKD: 1 },
-  RMB: { MOP: 1.27, HKD: 1.23, USD: 0.14, RMB: 1 },
-  USD: { MOP: 9.00, HKD: 8.70, RMB: 7.20, USD: 1 }
+  MOP: { HKD: 0.97, RMB: 0.79, USD: 0.11, MOP:1 },
+  HKD: { MOP: 1.03, RMB: 0.81, USD: 0.11, HKD:1 },
+  RMB: { MOP: 1.27, HKD: 1.23, USD: 0.14, RMB:1 },
+  USD: { MOP: 9.00, HKD: 8.70, RMB: 7.20, USD:1 }
 };
 
 function convert() {
-  let amt = document.getElementById("amt").value;
+  let a = document.getElementById("amt").value;
   let f = document.getElementById("from").value;
   let t = document.getElementById("to").value;
-  let result = amt * rate[f][t];
-  document.getElementById("res").innerText = result.toFixed(2) + " " + t;
+  document.getElementById("res").innerText = (a * rate[f][t]).toFixed(2) + " " + t;
 }
 </script>
 </body>

@@ -4,59 +4,86 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style"="default">
+<meta name="apple-mobile-web-app-title" content="匯率換算">
+<meta name="mobile-web-app-capable" content="yes">
 <title>匯率換算</title>
 <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
     body {
         font-family: Arial, sans-serif;
-        background: #f4f6f8;
+        background: #f8f8f8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
         padding: 20px;
     }
     .container {
-        max-width: 380px;
-        margin: 0 auto;
+        max-width: 400px;
+        width: 100%;
         background: white;
-        padding: 25px;
-        border-radius: 18px;
+        padding: 40px 30px;
+        border-radius: 20px;
         text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
+    /* 匹配截图的兔子样式 */
     .rabbit {
-        width: 60px;
-        height: 60px;
-        background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjM1IiBjeT0iNDAiIHI9IjgiLz48Y2lyY2xlIGN4PSI2NSIgY3k9IjQwIiByPSI4Ii8+PHBhdGggZD0iTTUwIDYwIDEgMTAiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBmaWxsPSJub25lIi8+PC9zdmc+');
-        background-size: cover;
-        margin: 0 auto 15px auto;
+        font-size: 60px;
+        margin-bottom: 15px;
+        line-height: 1;
     }
     h2 {
-        margin-bottom: 20px;
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 30px;
+        color: #333;
     }
     input, select {
         width: 100%;
-        padding: 12px;
+        padding: 14px 16px;
         font-size: 16px;
-        border-radius: 10px;
         border: 1px solid #ddd;
-        margin-bottom: 12px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        outline: none;
     }
+    input::placeholder {
+        color: #999;
+    }
+    /* 橙色换算按钮 */
     button {
         width: 100%;
-        padding: 12px;
-        background: #0066cc;
+        padding: 16px;
+        background: #ff7f00; /* 标准橙色，匹配常见设计 */
         color: white;
         border: none;
-        border-radius: 10px;
-        font-size: 16px;
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: 500;
+        cursor: pointer;
+    }
+    button:hover {
+        background: #e67000;
     }
     .result {
         margin-top: 20px;
         font-size: 18px;
         font-weight: bold;
+        color: #333;
     }
 </style>
 </head>
 
 <body>
 <div class="container">
-    <div class="rabbit"></div>
+    <!-- 截图同款兔子符号 -->
+    <div class="rabbit">🐰</div>
     <h2>匯率換算</h2>
 
     <input type="number" id="amt" placeholder="輸入金額">
@@ -79,18 +106,21 @@
 </div>
 
 <script>
+// 汇率数据（和之前一致，保证换算准确）
 const rate = {
-  MOP: { HKD: 0.97, RMB: 0.79, USD: 0.11, MOP:1 },
-  HKD: { MOP: 1.03, RMB: 0.81, USD: 0.11, HKD:1 },
-  RMB: { MOP: 1.27, HKD: 1.23, USD: 0.14, RMB:1 },
-  USD: { MOP: 9.00, HKD: 8.70, RMB: 7.20, USD:1 }
+  MOP: { HKD: 0.97, RMB: 0.79, USD: 0.11, MOP: 1 },
+  HKD: { MOP: 1.03, RMB: 0.81, USD: 0.11, HKD: 1 },
+  RMB: { MOP: 1.27, HKD: 1.23, USD: 0.14, RMB: 1 },
+  USD: { MOP: 9.00, HKD: 8.70, RMB: 7.20, USD: 1 }
 };
 
+// 换算核心逻辑
 function convert() {
-  let a = document.getElementById("amt").value;
-  let f = document.getElementById("from").value;
-  let t = document.getElementById("to").value;
-  document.getElementById("res").innerText = (a * rate[f][t]).toFixed(2) + " " + t;
+  let amount = document.getElementById("amt").value || 0;
+  let fromCurrency = document.getElementById("from").value;
+  let toCurrency = document.getElementById("to").value;
+  let result = (amount * rate[fromCurrency][toCurrency]).toFixed(2);
+  document.getElementById("res").innerText = result + " " + toCurrency;
 }
 </script>
 </body>

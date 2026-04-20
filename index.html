@@ -1,123 +1,226 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>简易计算器</title>
+    <title>計算機 + 即時匯率</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         body {
+            background: linear-gradient(135deg, #f0f7ff, #d9e7ff);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            background-color: #f0f0f0;
-        }
-
-        .calculator {
-            background: #222;
             padding: 20px;
-            border-radius: 15px;
-            width: 320px;
         }
 
-        #display {
-            width: 100%;
-            height: 70px;
+        .card {
             background: white;
-            margin-bottom: 15px;
-            font-size: 32px;
-            text-align: right;
-            padding-right: 10px;
-            border-radius: 8px;
-            border: none;
+            border-radius: 24px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 460px;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
         }
 
-        .buttons {
+        /* 標題 + 小白兔 */
+        .title-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .rabbit-img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        /* 計算機樣式 */
+        .calculator {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        #calcDisplay {
+            width: 100%;
+            padding: 18px;
+            font-size: 26px;
+            text-align: right;
+            border: 1px solid #e0e0e0;
+            border-radius: 16px;
+            background: #fafbfc;
+        }
+
+        .calcBtns {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 10px;
         }
 
-        button {
-            padding: 18px;
+        .calcBtns button {
+            padding: 16px;
             font-size: 18px;
-            border-radius: 8px;
             border: none;
-            background: #444;
-            color: white;
+            border-radius: 12px;
+            background: #f5f7fa;
             cursor: pointer;
         }
 
-        button:hover {
-            background: #666;
+        .calcBtns .op {
+            background: #3b82f6;
+            color: white;
         }
 
-        .equal {
-            background: #ff9800;
-            color: black;
-            font-weight: bold;
+        .calcBtns .eq {
+            background: #10b981;
+            color: white;
         }
 
-        .clear {
-            background: #f44336;
+        /* 匯率換算 */
+        .exch {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .exchTitle {
+            font-size: 18px;
+            font-weight: 600;
+            color: #222;
+        }
+
+        input, select {
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            font-size: 16px;
+        }
+
+        #result {
+            font-size: 19px;
+            font-weight: 700;
+            color: #1a1a1a;
+            padding: 8px 0;
+        }
+
+        #rateInfo {
+            font-size: 13px;
+            color: #666;
         }
     </style>
 </head>
+
 <body>
+    <div class="card">
+        <!-- 小白兔 + 標題 -->
+        <div class="title-area">
+            <img class="rabbit-img" src="https://i.imgur.com/Hsnskvw.png" alt="小白兔">
+            <div class="title">計算機 + 即時匯率</div>
+        </div>
 
-    <div class="calculator">
-        <input type="text" id="display" readonly>
-        <div class="buttons">
-            <button class="clear" onclick="clearDisplay()">C</button>
-            <button onclick="append('/')">/</button>
-            <button onclick="append('*')">x</button>
-            <button onclick="append('-')">-</button>
+        <!-- 計算機 -->
+        <div class="calculator">
+            <input type="text" id="calcDisplay" readonly>
+            <div class="calcBtns">
+                <button>7</button><button>8</button><button>9</button><button class="op">/</button>
+                <button>4</button><button>5</button><button>6</button><button class="op">*</button>
+                <button>1</button><button>2</button><button>3</button><button class="op">-</button>
+                <button>0</button><button>.</button><button class="op">C</button><button class="op">+</button>
+                <button class="eq" colspan="4">=</button>
+            </div>
+        </div>
 
-            <button onclick="append('7')">7</button>
-            <button onclick="append('8')">8</button>
-            <button onclick="append('9')">9</button>
-            <button onclick="append('+')">+</button>
+        <!-- 匯率換算 -->
+        <div class="exch">
+            <div class="exchTitle">即時匯率換算（參考 BOC Macau）</div>
+            <input type="number" id="amt" placeholder="輸入金額" oninput="convert()">
+            
+            <select id="from" onchange="convert()">
+                <option value="MOP">澳門元 MOP</option>
+                <option value="CNY">人民幣 CNY</option>
+                <option value="USD">美元 USD</option>
+                <option value="TWD">台幣 TWD</option>
+            </select>
 
-            <button onclick="append('4')">4</button>
-            <button onclick="append('5')">5</button>
-            <button onclick="append('6')">6</button>
-            <button class="equal" rowspan="2" onclick="calculate()">=</button>
+            <select id="to" onchange="convert()">
+                <option value="CNY">人民幣 CNY</option>
+                <option value="MOP">澳門元 MOP</option>
+                <option value="USD">美元 USD</option>
+                <option value="TWD">台幣 TWD</option>
+            </select>
 
-            <button onclick="append('1')">1</button>
-            <button onclick="append('2')">2</button>
-            <button onclick="append('3')">3</button>
-
-            <button onclick="append('0')">0</button>
-            <button onclick="append('.')">.</button>
+            <div id="result"></div>
+            <div id="rateInfo">匯率載入中...</div>
         </div>
     </div>
 
     <script>
-        let display = document.getElementById('display');
+        // 計算機功能
+        const display = document.getElementById('calcDisplay');
+        document.querySelectorAll('.calcBtns button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const t = btn.textContent;
+                if (t === '=') {
+                    try { display.value = eval(display.value); }
+                    catch { display.value = '錯誤'; }
+                } else if (t === 'C') {
+                    display.value = '';
+                } else {
+                    display.value += t;
+                }
+            });
+        });
 
-        function append(value) {
-            display.value += value;
-        }
+        // 即時匯率
+        let rates = null;
 
-        function calculate() {
+        async function loadRates() {
             try {
-                display.value = eval(display.value);
-            } catch (error) {
-                display.value = "错误";
+                const res = await fetch('https://open.er-api.com/v6/latest/MOP');
+                const data = await res.json();
+                rates = data.rates;
+                document.getElementById('rateInfo').innerText = "✅ 即時匯率已更新";
+                convert();
+            } catch (e) {
+                document.getElementById('rateInfo').innerText = "⚠️ 使用參考匯率";
+                rates = { MOP:1, CNY:0.94, USD:0.13, TWD:4.15 };
+                convert();
             }
         }
 
-        function clearDisplay() {
-            display.value = "";
-        }
-    </script>
+        function convert() {
+            const amt = document.getElementById('amt').value;
+            const from = document.getElementById('from').value;
+            const to = document.getElementById('to').value;
+            const result = document.getElementById('result');
 
+            if (!amt || !rates) { result.innerText = ''; return; }
+
+            const val = (amt / rates[from]) * rates[to];
+            result.innerText = `結果：${val.toFixed(4)} ${to}`;
+        }
+
+        loadRates();
+    </script>
 </body>
 </html>

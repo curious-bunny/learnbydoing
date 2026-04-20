@@ -4,19 +4,83 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>匯率換算（即時更新）</title>
+<meta name="apple-mobile-web-app-status-bar-style"="default">
+<meta name="apple-mobile-web-app-title" content="匯率換算">
+<meta name="mobile-web-app-capable" content="yes">
+<title>匯率換算</title>
 <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: Arial, sans-serif; background: #f8f8f8; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-    .container { max-width: 400px; width: 100%; background: white; padding: 40px 30px; border-radius: 20px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-    .rabbit { font-size: 60px; margin-bottom: 15px; line-height: 1; }
-    h2 { font-size: 28px; font-weight: bold; margin-bottom: 30px; color: #333; }
-    input, select { width: 100%; padding: 14px 16px; font-size: 16px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 16px; outline: none; }
-    input::placeholder { color: #999; }
-    button { width: 100%; padding: 16px; background: #ff7f00; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: 500; cursor: pointer; }
-    button:hover { background: #e67000; }
-    .result { margin-top: 20px; font-size: 18px; font-weight: bold; color: #333; }
-    .update-time { margin-top: 10px; font-size: 12px; color: #999; }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    body {
+        font-family: Arial, sans-serif;
+        background: #f8f8f8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+    }
+    .container {
+        max-width: 400px;
+        width: 100%;
+        background: white;
+        padding: 40px 30px;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .rabbit {
+        font-size: 60px;
+        margin-bottom: 15px;
+        line-height: 1;
+    }
+    h2 {
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 30px;
+        color: #333;
+    }
+    input, select {
+        width: 100%;
+        padding: 14px 16px;
+        font-size: 16px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        outline: none;
+    }
+    input::placeholder {
+        color: #999;
+    }
+    button {
+        width: 100%;
+        padding: 16px;
+        background: #ff7f00;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: 500;
+        cursor: pointer;
+    }
+    button:hover {
+        background: #e67000;
+    }
+    .result {
+        margin-top: 20px;
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+    }
+    .footer-note {
+        margin-top: 20px;
+        font-size: 12px;
+        color: #666;
+        line-height: 1.5;
+    }
 </style>
 </head>
 
@@ -42,21 +106,22 @@
 
     <button onclick="convert()">換算</button>
     <div class="result" id="res"></div>
-    <div class="update-time" id="updateTime"></div>
+    <!-- 底部标注来源+说明 -->
+    <div class="footer-note">
+        匯率來源：國際通用基准匯率（Exchangerate-api）<br>
+        備註：與中銀澳門匯率略有點差，僅供參考
+    </div>
 </div>
 
 <script>
-// 存储实时汇率数据
 let realTimeRate = {};
 
-// 页面加载时自动获取最新汇率
+// 页面加载获取最新汇率
 window.onload = async function() {
     try {
-        // 调用免费汇率接口（无需注册，直接用）
         const response = await fetch('https://api.exchangerate-api.com/v4/latest/HKD');
         const data = await response.json();
         
-        // 整理汇率（以HKD为基准，换算成和中银一致的逻辑）
         const hkdRate = data.rates.HKD;
         realTimeRate = {
             MOP: { 
@@ -84,23 +149,18 @@ window.onload = async function() {
                 USD: 1 
             }
         };
-
-        // 显示汇率更新时间
-        const updateTime = new Date(data.date);
-        document.getElementById("updateTime").innerText = `匯率更新時間：${updateTime.getFullYear()}-${(updateTime.getMonth()+1).toString().padStart(2,0)}-${updateTime.getDate().toString().padStart(2,0)}`;
     } catch (error) {
-        // 接口失效时用备用固定汇率
+        // 接口失效时用备用汇率（接近中银澳门近期数值）
         realTimeRate = {
-            MOP: { HKD: 0.97, CNY: 0.79, USD: 0.11, MOP: 1 },
-            HKD: { MOP: 1.03, CNY: 0.81, USD: 0.11, HKD: 1 },
-            CNY: { MOP: 1.27, HKD: 1.23, USD: 0.14, CNY: 1 },
-            USD: { MOP: 9.00, HKD: 8.70, CNY: 7.20, USD: 1 }
+            MOP: { HKD: 0.972, CNY: 0.795, USD: 0.112, MOP: 1 },
+            HKD: { MOP: 1.029, CNY: 0.818, USD: 0.115, HKD: 1 },
+            CNY: { MOP: 1.258, HKD: 1.222, USD: 0.142, CNY: 1 },
+            USD: { MOP: 8.929, HKD: 8.702, CNY: 7.042, USD: 1 }
         };
-        document.getElementById("updateTime").innerText = "當前使用備用匯率（每日更新）";
     }
 };
 
-// 实时换算逻辑
+// 换算逻辑
 function convert() {
   let amount = document.getElementById("amt").value || 0;
   let fromCurrency = document.getElementById("from").value;

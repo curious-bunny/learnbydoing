@@ -90,11 +90,13 @@
     <h2>匯率換算</h2>
 
     <input type="number" id="amt" placeholder="輸入金額">
+    <!-- 新增台幣 TWD 选项 -->
     <select id="from">
         <option value="MOP">澳門元 MOP</option>
         <option value="HKD">港幣 HKD</option>
         <option value="CNY">人民幣 RMB</option>
         <option value="USD">美元 USD</option>
+        <option value="TWD">台幣 TWD</option>
     </select>
 
     <select id="to">
@@ -102,11 +104,11 @@
         <option value="MOP">澳門元 MOP</option>
         <option value="CNY">人民幣 RMB</option>
         <option value="USD">美元 USD</option>
+        <option value="TWD">台幣 TWD</option>
     </select>
 
     <button onclick="convert()">換算</button>
     <div class="result" id="res"></div>
-    <!-- 底部标注来源+说明 -->
     <div class="footer-note">
         匯率來源：國際通用基准匯率（Exchangerate-api）<br>
         備註：與中銀澳門匯率略有點差，僅供參考
@@ -116,51 +118,64 @@
 <script>
 let realTimeRate = {};
 
-// 页面加载获取最新汇率
+// 页面加载获取最新汇率（包含台幣）
 window.onload = async function() {
     try {
         const response = await fetch('https://api.exchangerate-api.com/v4/latest/HKD');
         const data = await response.json();
         
         const hkdRate = data.rates.HKD;
+        // 新增 TWD 汇率换算逻辑
         realTimeRate = {
             MOP: { 
                 HKD: (hkdRate / data.rates.MOP).toFixed(4), 
                 CNY: (data.rates.CNY / data.rates.MOP).toFixed(4), 
                 USD: (data.rates.USD / data.rates.MOP).toFixed(4), 
+                TWD: (data.rates.TWD / data.rates.MOP).toFixed(4),
                 MOP: 1 
             },
             HKD: { 
                 MOP: (data.rates.MOP / hkdRate).toFixed(4), 
                 CNY: (data.rates.CNY / hkdRate).toFixed(4), 
                 USD: (data.rates.USD / hkdRate).toFixed(4), 
+                TWD: (data.rates.TWD / hkdRate).toFixed(4),
                 HKD: 1 
             },
             CNY: { 
                 MOP: (data.rates.MOP / data.rates.CNY).toFixed(4), 
                 HKD: (hkdRate / data.rates.CNY).toFixed(4), 
                 USD: (data.rates.USD / data.rates.CNY).toFixed(4), 
+                TWD: (data.rates.TWD / data.rates.CNY).toFixed(4),
                 CNY: 1 
             },
             USD: { 
                 MOP: (data.rates.MOP / data.rates.USD).toFixed(4), 
                 HKD: (hkdRate / data.rates.USD).toFixed(4), 
                 CNY: (data.rates.CNY / data.rates.USD).toFixed(4), 
+                TWD: (data.rates.TWD / data.rates.USD).toFixed(4),
                 USD: 1 
+            },
+            TWD: { 
+                MOP: (data.rates.MOP / data.rates.TWD).toFixed(4), 
+                HKD: (hkdRate / data.rates.TWD).toFixed(4), 
+                CNY: (data.rates.CNY / data.rates.TWD).toFixed(4), 
+                USD: (data.rates.USD / data.rates.TWD).toFixed(4),
+                TWD: 1 
             }
         };
     } catch (error) {
-        // 接口失效时用备用汇率（接近中银澳门近期数值）
+        // 接口失效时用备用汇率（包含台幣，接近近期实际汇率）
         realTimeRate = {
-            MOP: { HKD: 0.972, CNY: 0.795, USD: 0.112, MOP: 1 },
-            HKD: { MOP: 1.029, CNY: 0.818, USD: 0.115, HKD: 1 },
-            CNY: { MOP: 1.258, HKD: 1.222, USD: 0.142, CNY: 1 },
-            USD: { MOP: 8.929, HKD: 8.702, CNY: 7.042, USD: 1 }
+            MOP: { HKD: 0.972, CNY: 0.795, USD: 0.112, TWD: 3.45, MOP: 1 },
+            HKD: { MOP: 1.029, CNY: 0.818, USD: 0.115, TWD: 3.55, HKD: 1 },
+            CNY: { MOP: 1.258, HKD: 1.222, USD: 0.142, TWD: 4.35, CNY: 1 },
+            USD: { MOP: 8.929, HKD: 8.702, CNY: 7.042, TWD: 31.20, USD: 1 },
+            TWD: { MOP: 0.289, HKD: 0.282, CNY: 0.230, USD: 0.032, TWD: 1 }
         };
     }
 };
 
-// 换算逻辑
+// 换算逻辑（自动适配台幣）
 function convert() {
   let amount = document.getElementById("amt").value || 0;
   let fromCurrency = document.getElementById("from").value;
